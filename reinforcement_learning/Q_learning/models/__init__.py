@@ -1,0 +1,2 @@
+from .kapitza_model_quantum import model as model_kapitza_quantum
+from .kapitza_model_classical import model as model_kapitza_classical
