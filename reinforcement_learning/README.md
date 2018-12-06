@@ -16,7 +16,7 @@ The package is written in Python (with the exception of a custom data structure 
 
 Required Python packages: [quspin](http://weinbe58.github.io/QuSpin/), cython
 
-00. Random Number Generator Wrapper
+### Random Number Generator Wrapper
 
 To ensure reproducibility of the results, a C++ random number generator is wrapped up using Cython and made available in Python. To compile the libraries, go to 
 
@@ -28,7 +28,7 @@ and execute:
 python setup.py build_ext -i
 `
 
-0. Custom Data Structure for the Q-function
+### Custom Data Structure for the Q-function
 
 The package provides a custom data structure for the Q-function, which is similar to a python dictionary, but in addition supports elementary algebraic operations. Importantly, one does not need to pre-allocate the size of this object: as a result, it only stores the observed state-action pairs, which allows the algorithm to explore exponentially large state spaces efficiently. 
 
@@ -43,7 +43,7 @@ and execute:
 python setup.py build_ext -i
 `
 
-2. Python Version
+### Python Version
 
 The Pytnon version of the code can be found under
 `
@@ -53,7 +53,7 @@ The file `Q_learning_python/Q_learning_wrapper.py` contains the class `Q_learnin
 
 The package architecture, in particular the wrapper class, in the Python version is merely to mirror the structure of the Cython version, where it is required.
 
-3. Cython Version
+### Cython Version
 
 We also provide a faster, Cython version of the Q-Learning algorithm, under
 `
