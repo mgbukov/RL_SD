@@ -3,13 +3,13 @@
 This package implements the tabular Q-Learning code used in [arXiv:1808.08910](https://arxiv.org/abs/1808.08910). There are some peculiarities of appliying RL to prepare quantum states (see paper for a detailed discussion): (i) wavefunction collapse requires rewards to be sparse and given only in the end of the episode; (ii) the non-observability of quantum states imposes that the RL states consist of sequences of the RL actions; (iii) repetitions are used to collect quantum statistics (quantum measurements being non-deterministic)
 
 
-## Structure of the Package:
+## Structure of the Code:
 
 The main control file, which contains all model and algorithm parameters is `main_kapitza.py`. It calls the `apply_RL` function, located in `/search_algos/RL.py`. The latter instantiates the `Q_learning` class, which contains the Q-Learning algorithm.
 
 There are two models which provide simulators for the environment, located in `/models/`: `kapitza_model_quantum.py` and `kapitza_model_classical.py`. 
 
-## Compiling the Package:
+## Compiling the Code:
 
 The package is written in Python (with the exception of a custom data structure for the Q-function). Additionally, some parts of the code are written in Cython/C++ for speed. C++ code is wrapped using Cython. All memory is managed by Python.
 
@@ -75,7 +75,7 @@ python setup.py build_ext -i
 `
 
 
-## Running the Package
+## Running the Code
 
 Choosing a version: toggling between the python and cython version of the package is done in lines 6, 7 of `/search_algos/RL.py`.
 
