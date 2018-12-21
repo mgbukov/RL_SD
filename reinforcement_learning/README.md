@@ -1,6 +1,6 @@
 # Tabular Q-Learning to prepare the inverted position state of the Kapitza oscillator
 
-This package implements the tabular Q-Learning code used in [arXiv:1808.08910](https://arxiv.org/abs/1808.08910). There are some peculiarities of appliying RL to prepare quantum states (see paper for a detailed discussion): (i) wavefunction collapse requires rewards to be sparse and given only in the end of the episode; (ii) the non-observability of quantum states imposes that the RL states consist of sequences of the RL actions; (iii) repetitions are used to collect quantum statistics (quantum measurements being non-deterministic)
+This package implements the tabular Q-Learning code used in [Physical Review X](https://journals.aps.org/prx/abstract/10.1103/PhysRevX.8.031086). There are some peculiarities of appliying RL to prepare quantum states (see paper for a detailed discussion): (i) wavefunction collapse requires rewards to be sparse and given only in the end of the episode; (ii) the non-observability of quantum states imposes that the RL states consist of sequences of the RL actions; (iii) repetitions are used to collect quantum statistics (quantum measurements being non-deterministic)
 
 
 ## Structure of the Code:
