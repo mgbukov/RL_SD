@@ -1,0 +1,3 @@
+# Stochastic descent for quantum state preparation using bang-bang protocols
+
+This package is a reproduction of the code used to generate the results shown in [arXiv:1803.10856](https://arxiv.org/abs/1803.10856) and to appear in PRL. Given an initial state and a target state and a control Hamiltonian, stochastic descent optimizes the fidelity in order to find the optimal protocol. Some examples are provided below and can be run directly in the example directory.
