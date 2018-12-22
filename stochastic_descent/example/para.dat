@@ -11,17 +11,11 @@ dt	-1
 n_step  100
 n_flip 2
 n_sample    20
-n_quench    0
 T	2.7
-Ti	-1
 outfile	auto
 root ./
 verbose 1
-symmetrize 0
 fid_series 0
 fast_protocol 1
 n_partition 10
 compress_output wo_protocol
-para_evaluation 1
-para_n_slice 2
-para_this_slice 1

@@ -61,21 +61,12 @@ class QSP:
         model = self.model
         utils = self.utils
 
-        if parameters['task'] ==  'SA':
-            print("Simulated annealing")
-            run_SA(parameters, model, utils)
-        elif parameters['task'] == 'GB':
-            print("Gibbs sampling") 
-            run_GS(parameters, model)
-        elif parameters['task'] == 'SD':
+        if parameters['task'] == 'SD':
             print("Stochastic descent with n_flip = %i "%parameters['n_flip'])
             run_SD(parameters, model, utils)
         elif parameters['task'] == 'ES':
             print("Exact spectrum")
             run_ES(parameters, model, utils)
-        elif parameters['task'] == 'SASD':
-            print("Simulating annealing followed by stochastic descent")
-            run_SA(parameters, model, utils)
         elif parameters['task'] == 'FO':
             run_FO(parameters, model, utils)
         else:
@@ -122,115 +113,6 @@ class QSP:
 # ---------------> 
 ###################################################################################
 ###################################################################################
-
-
-def run_SA(parameters, model:MODEL, utils, save = True):
-    
-    if parameters['verbose'] == 0:
-        blockPrint()
-
-    outfile = utils.make_file_name(parameters,root=parameters['root'])
-    n_exist_sample, all_result = utils.read_current_results(outfile)
-    n_sample = parameters['n_sample']
-
-    if parameters['Ti'] < 0. :
-        parameters['Ti'] = compute_initial_Ti(parameters, model, n_sample=1000)
-        print("Initial temperature Ti=%.3f" % parameters['Ti'])
-
-    if n_exist_sample >= n_sample :
-        print("\n\n-----------> Samples already computed in file -- terminating ... <-----------")
-        return all_result
-
-    print("\n\n-----------> Starting simulated annealing <-----------")
-    
-    n_iteration_left = n_sample - n_exist_sample  # data should be saved 10 times --> no more (otherwise things are way too slow !)
-    n_mod = max([1, n_iteration_left // 10])
-
-    for it in range(n_iteration_left):
-
-        start_time=time.time()
-        best_fid, best_protocol, n_fid_eval = SA(parameters, model) # -- --> performing annealing here <-- --
-        
-        if parameters['task'] == 'SASD':
-            print(' -> Stochastic descent ... ')
-            model.update_protocol(best_protocol)
-            best_fid, best_protocol, n_fid_eval_SD = SD(parameters, model, init_random = False)
-            n_fid_eval += n_fid_eval_SD
-
-        energy = model.compute_energy(protocol = best_protocol)
-        
-        result = [n_fid_eval, best_fid,  energy, best_protocol]
-
-        print("\n----------> RESULT FOR ANNEALING NO %i <-------------"%(it+1))
-        print("Number of fidelity eval \t%i"%n_fid_eval)
-        print("Best fidelity \t\t\t%.4f"%best_fid)
-        print("Best hx_protocol\t\t",list(best_protocol))
-        
-        all_result.append(result)
-        if save and it % n_mod == 0:
-            with open(outfile,'wb') as f:
-                pickle.dump([parameters, all_result],f)
-                f.close()
-            print("Saved iteration --> %i to %s"%(it + n_exist_sample,outfile))
-        print("Iteration run time --> %.4f s" % (time.time()-start_time))
-    
-    print("\n Thank you and goodbye !")
-    enablePrint()
-
-    if save :
-        with open(outfile,'wb') as f:
-            print("Saved results in %s"%outfile)
-            pickle.dump([parameters, all_result],f)
-            f.close()
-    return all_result    
-
-def SA(param, model:MODEL):
-    
-    Ti = param['Ti']
-    n_quench = param['n_quench']
-    if n_quench == 0:
-        return
-    n_step = param['n_step']
-    
-    # initial random protocol
-    model.update_protocol( np.random.randint(0, model.n_h_field, size=n_step) )
-    old_fid = model.compute_fidelity()
-    best_fid = old_fid
-    best_protocol = np.copy(model.protocol())
-
-    T = Ti
-    step = 0
-    r=0
-    while T > 1e-12:
-        beta = 1./T
-        
-        #  --- ---> single spin flip update <--- ---
-        random_time = np.random.randint(0,n_step)
-        current_hx = model.protocol_hx(random_time)
-        model.update_hx(random_time, model.random_flip(random_time))
-        #  --- --- --- --- --- --- --- --- --- ---
-
-        new_fid = model.compute_fidelity()
-        
-        if new_fid > best_fid:
-            best_fid = new_fid 
-            best_protocol = np.copy(model.protocol()) # makes an independent copy !
-
-        d_fid = new_fid - old_fid 
-
-        if d_fid > 0. : # accept move
-            old_fid = new_fid
-        elif np.exp(beta*d_fid) > np.random.uniform() : # accept move
-            old_fid = new_fid
-        else: # reject move
-            r+=1
-            model.update_hx(random_time, current_hx)
-        
-        step += 1
-        T = Ti * (1.0-step/n_quench)
-    
-    print(1-r/n_quench)
-    return best_fid, best_protocol, n_quench
 
 def run_SD(parameters, model:MODEL, utils, save = True):
 
@@ -304,83 +186,6 @@ def run_SD(parameters, model:MODEL, utils, save = True):
         print("# of distinct protocols :\t %i"%len(np.unique(all_protocol, axis=0)))
 
     return all_result    
-
-def Gibbs_Sampling(param, model:MODEL): 
-    # should also measure acceptance rate 
-
-    Ti = param['Ti']
-    beta = 1./Ti
-    n_step = param['n_step']
-    n_equilibrate = 10000
-    n_auto_correlate = n_step*10 # should look at auto-correlation time !
-    
-    # initial random protocol
-    model.update_protocol( np.random.randint(0, model.n_h_field, size=n_step) )
-    old_fid = model.compute_fidelity()
-    best_fid = old_fid
-
-    for i in range(n_equilibrate):
-        
-        random_time = np.random.randint(0,n_step)
-        current_hx = model.protocol_hx(random_time)
-        model.update_hx(random_time, model.random_flip(random_time))
-
-        new_fid = model.compute_fidelity()
-
-        d_fid = new_fid - old_fid 
-
-        if d_fid > 0. : # accept move
-            old_fid = new_fid
-        elif np.exp(beta*d_fid) > np.random.uniform() : # accept move
-            old_fid = new_fid
-        else: # reject move
-            model.update_hx(random_time, current_hx)
-
-    samples = []
-    fid_samples = []
-    energy_samples = []
-
-    for i in range(n_sample):
-        
-        for j in range(n_auto_correlate):
-            random_time = np.random.randint(0,n_step)
-            current_hx = model.protocol_hx(random_time)
-            model.update_hx(random_time, model.random_flip(random_time))
-
-            new_fid = model.compute_fidelity()
-
-            d_fid = new_fid - old_fid 
-
-            if d_fid > 0. : # accept move
-                old_fid = new_fid
-            elif np.exp(beta*d_fid) > np.random.uniform() : # accept move
-                old_fid = new_fid
-            else: # reject move
-                model.update_hx(random_time, current_hx)
-        
-        samples.append(np.copy(model.protocol()))
-        fid_samples.append(model.compute_fidelity())
-        energy_samples.append(model.compute_energy())
-        
-    return samples, fid_samples, energy_samples
-
-def compute_initial_Ti(param, model:MODEL, n_sample = 100, rate = 0.8):
-    # OK how is this acceptable ? >>>>>>> not tested at all <<<<<<<<
-    # Estimates the high-temperature limit (where the acceptance rate is 99 the average worst case excitations %) 
-
-    n_step = param['n_step']
-    dF_mean = []
-
-    for _ in range(n_sample):
-        model.update_protocol( np.random.randint(0, model.n_h_field, size=n_step) )
-        old_fid = model.compute_fidelity()
-        rand_pos = np.random.randint(n_step)
-        model.update_hx(rand_pos, model.random_flip(rand_pos))
-        dF = model.compute_fidelity()-old_fid
-        if dF < 0: 
-            dF_mean.append(dF)
-    
-    return np.mean(dF_mean)/ np.log(rate)
 
 def run_ES(parameters, model:MODEL, utils):
     """
@@ -487,8 +292,6 @@ def run_FO(parameters, model:MODEL, utils):
     print("Total run time : \t %.3f s"%(time.time()-st))
     print("\n Thank you and goodbye !")
     f.close()
-
-
 
 def symmetrize_protocol(hx_protocol):
     Nstep=len(hx_protocol)

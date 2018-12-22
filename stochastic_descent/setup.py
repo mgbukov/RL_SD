@@ -9,7 +9,7 @@ extensions = [
 ]
 
 setup(name='qsp_opti',
-      version='0.1',
+      version='1.0',
       description='Optimization of quantum state preparation',
       url='https://github.com/alexandreday/https://github.com/alexandreday/Optimize_QSP',
       author='Alexandre Day',

@@ -39,10 +39,9 @@ class UTILS:
 		'hx_min' : float,
 		'dh' : float,
 		'n_sample' : int,
-		'n_quench' : int,
-		'Ti' : float,
+		#'n_quench' : int,
+		#'Ti' : float,
 		'T' : float,
-		'symmetrize' : int,
 		'outfile' : str,
 		'verbose' : int,
 		'task' : str,
@@ -51,10 +50,7 @@ class UTILS:
 		'fid_series': bool,
 		'n_flip':int,
 		'n_partition':int,
-		'compress_output':str,
-		'para_evaluation':int,
-		'para_n_slice':int,
-		'para_this_slice':int
+		'compress_output':str
 	}
 
 	def read_command_line_arg(self, parameters, argv):
@@ -80,7 +76,8 @@ class UTILS:
 		with open(file,'r') as f:
 			info={}
 			for line in f:
-				tmp=line.strip('\n').split('\t')
+				tmp=line.split()
+				#print(tmp)
 				if len(tmp) == 1:
 					tmp = tmp[0].split(' ')
 				assert len(tmp) == 2, 'Wrong format for input file, need to have a space or tab separating parameter and its value'
@@ -115,16 +112,13 @@ class UTILS:
 			hx_i: initial tranverse field coupling
 			hx_initial_state: initial state transverse field
 			hx_final_state: final state transverse field
-			Ti: initial temperature for annealing
 			
-			N_quench: number of quenches (i.e. no. of time temperature is quenched to reach exactly T=0)
 			N_time_step: number of time steps
 			action_set: array of possible actions
 			outfile_name: file where data is being dumped (via pickle) 
 			delta_t: time scale
 			N_restart: number of restart for the annealing
 			verbose: If you want the program to print to screen the progress
-			symmetrize_protocol: Wether or not to work in the symmetrized sector of protocols
 			
 			n_flip : number of spin flips in the SD algorithm (only applicable there)
 			hx_max : maximum hx field (the annealer can go between -hx_max and hx_max
@@ -135,9 +129,10 @@ class UTILS:
 		"""
 
 		L, dt, J, n_step, hz, hx_max = tuple([parameters[s] for s in ['L','dt', 'J', 'n_step','hz','hx_max']])
-		hx_initial_state, hx_final_state, n_quench, n_sample, n_step, n_flip = tuple([parameters[s] for s in ['hx_i','hx_f','n_quench','n_sample','n_step','n_flip']])
-		symmetrize,outfile = tuple([parameters[s] for s in ['symmetrize','outfile']])
+		hx_initial_state, hx_final_state,  n_sample, n_step, n_flip = tuple([parameters[s] for s in ['hx_i','hx_f','n_sample','n_step','n_flip']])
 
+		outfile = self.make_file_name(parameters, root = parameters['root'])
+		
 		print("-------------------- > Parameters < --------------------")
 		print("{0:<30s}{1:<5d}".format('L',L))
 		print("{0:<30s}{1:<5.2f}".format('J',J))
@@ -146,7 +141,7 @@ class UTILS:
 		print("{0:<30s}{1:<5.2f}".format('hx_initial_state',hx_initial_state))
 		print("{0:<30s}{1:<5.2f}".format('hx_final_state',hx_final_state))
 
-		print("{0:<30s}{1:<5d}".format('n_quench',n_quench))
+		#print("{0:<30s}{1:<5d}".format('n_quench',n_quench))
 		print("{0:<30s}{1:<5.4f}".format('dt',dt))
 		print("{0:<30s}{1:<5d}".format('n_sample',n_sample))
 		print("{0:<30s}{1:<5d}".format('n_step',n_step))
@@ -154,8 +149,8 @@ class UTILS:
 		
 		print("{0:<30s}{1:<5.2f}".format('T',n_step*dt))
 		print("{0:<30s}{1:<5s}".format('Task',parameters['task']))
-		print("{0:<30s}{1:<5s}".format("Output file",'data/'+outfile))
-		print("{0:<30s}{1:<5s}".format("Symmetrizing protocols",str(symmetrize)))
+		print("{0:<30s}{1:<5s}".format("Output file", outfile))
+		#print("{0:<30s}{1:<5s}".format("Symmetrizing protocols",str(symmetrize)))
 		print("{0:<30s}{1:<5s}".format("Compute fid series ?",str(parameters['fid_series'])))
 		print("{0:<30s}{1:<5s}".format("Fast computation ?",str(parameters['fast_protocol'])))
 		
@@ -182,9 +177,8 @@ class UTILS:
 						['n_step','int-4'],
 						['T','float-2'],
 						# --
-						['n_quench','int-4'],
-						['Ti','float-2'],
-						['symmetrize','int-1'],
+						#['n_quench','int-4'],
+						#['Ti','float-2'],
 						# -- 
 						['J','float-2'],
 						['hz','float-2'],
@@ -211,8 +205,8 @@ class UTILS:
 			elif tmp[0] == 'str':
 				if param_name == 'task' and parameters['task'] == 'SD' :
 					param_value[i] = parameters[param_name] + str(parameters['n_flip'])
-				elif param_name == 'task' and parameters['para_evaluation'] == 1 and parameters['task'] == 'FO':
-					param_value[i] = parameters[param_name] + str(parameters['para_this_slice'])
+				elif param_name == 'task' and parameters['task'] == 'FO':
+					param_value[i] = parameters[param_name]
 				else:
 					param_value[i]=parameters[param_name]
 			else:
@@ -221,9 +215,9 @@ class UTILS:
 		
 		file_name_composition=["%s",
 								"L=%s","dt=%s","nStep=%s","T=%s",
-								"nQuench=%s","Ti=%s","symm=%s",
 								"J=%s","hz=%s","hxI=%s","hxF=%s","hxmax=%s","hxmin=%s","dh=%s"]
 		file_name="_".join(file_name_composition)
+
 		file_name=file_name%tuple(param_value)
 		
 		return root+file_name+extension
