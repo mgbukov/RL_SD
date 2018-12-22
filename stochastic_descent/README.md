@@ -33,22 +33,22 @@ Each element of that list is a single sample. Each line has the following inform
 
 Where:
 
-* ``n_eval`` is the number of protocol's fidelity that were computed to find the local minima
+* ``n_eval`` is the number of protocol's fidelity that were computed to find the local minimum.
 
-* ``fidelity`` is the fidelity of the local minima
+* ``fidelity`` is the fidelity of the local minimum found.
 
-* ``energy`` -- legacy parameter -- please ignore
+* ``energy`` -- legacy parameter -- please ignore.
 
-* ``number_of_accept`` is the number of accepted stochastic descent updates (most are rejected !!)
+* ``number_of_accept`` is the number of accepted stochastic descent updates (most are rejected !!).
 
-* ``protocols`` is the corresponding local minima protocol found (just an array of 0 and 1). If the option
+* ``protocols`` is the corresponding local minimum protocol found (just an array of 0 and 1). If the option
 ``compress_output`` is chosen with the ``wo_protocol``, then the output is ``[-1]``.
 
 * ``fid_series`` are the successive fidelities encountered at each of the ``n_eval`` fidelity evaluations.
-If the ``fid_series`` option ``0`` is chosen, the output is ``[-1]``
+If the ``fid_series`` option ``0`` is chosen, the output is ``[-1]``.
 
 * ``move_history`` are the index of the accepted updates for stochastic descent. It is an array on integers in the interval
-``[0, n_step]``. If the ``fid_series`` option ``0`` is chosen, the output is ``[-1]``
+``[0, n_step]``. If the ``fid_series`` option ``0`` is chosen, the output is ``[-1]``.
 
 # Example
 
@@ -80,6 +80,12 @@ compress_output wo_protocol
 
 Each line corresponds to a different parameter. Below is a short documentation of how to use each parameter.
 
+To overide any of these parameters for the ``example.py`` file, you can use for instance:
+
+```
+python example.py T=1.0 n_sample=100
+```
+This will used all the parameters in ``para.dat`` and overide the parameters ``T`` and ``n_sample`` with the ones specified on the command line.
 
 ## Documentation
 
