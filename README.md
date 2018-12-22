@@ -1,6 +1,14 @@
 # RL_SD
 
-Open-source code for Reinforcement Learning and Stochastic Descent [coming up] (see corresponding directories). 
+Open-source code for Reinforcement Learning and Stochastic Descent(see corresponding directories). 
+
+# Requirements
+
+The code uses heavily [QuSpin](http://weinbe58.github.io/QuSpin/) (developed by one of the authors). QuSpin can be easily installed via an Anaconda Python 3+ environment, using:
+
+```
+conda install -c weinbe58 quspin
+```
 
 # Citing
 
