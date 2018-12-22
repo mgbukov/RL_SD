@@ -20,6 +20,18 @@ from .SD import SD
 np.set_printoptions(precision=10)
 
 class QSP:
+    """ Quantum state preparation object. By default, the parameters
+    used are specified in a para.dat file found in the same directory where
+    the script is run in. To overide default parameters, one can specify parameters
+    through the command line using the parameter=value syntax
+
+    For instance:
+
+    python my_qsp_script.py parameter_1=value_1 parameter_2=value_2 ... 
+
+    Where for instance one can use: T=2.5 L=4
+    """
+
     def __init__(self, argv = None, parameter_file = "para.dat", symm = True, quick_check=False):
         # Utility object for reading, writing parameters, etc. 
         self.utils = UTILS()
