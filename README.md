@@ -12,7 +12,7 @@ conda install -c weinbe58 quspin
 
 # Citing
 
-If you use this code in your research, please cite one the reference papers:
+If you use this code in your research, you may consider citing one of our related papers.
 
 ## Reinforcement learning in different phases of quantum control (PRX)
 
