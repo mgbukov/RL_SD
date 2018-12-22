@@ -8,12 +8,52 @@ In order to install, we recommend using an Anaconda Python 3.6 then using:
 ```
 pip install .
 ```
-from within the ``stochastic_descent/`` directory
+from within the ``stochastic_descent/`` directory.
+
+Check the file ``example/example.py`` and try to run it to see if your installation worked. It should generate
+20 samples for a L=1 system with a ramp-time of T=2.7 using stochastic descent with 2-flips, etc.
+
+# Reading the results
+
+The results are stored in a pickle file generated automatically. To read the results from file ``data.pkl``,
+just use:
+
+```
+import pickle
+
+parameters, data = pickle.load(open('data.pkl','rb'))
+
+```
+Here ``parameters`` is just a Python dictionary of the parameters used and ``data`` contains a Python list of the results.
+Each element of that list is a single sample. Each line has the following information:
+
+```
+[n_eval, fidelity, energy, number_of_accept, protocols, fid_series, move_history]
+```
+
+Where:
+
+* ``n_eval`` is the number of protocol's fidelity that were computed to find the local minima
+
+* ``fidelity`` is the fidelity of the local minima
+
+* ``energy`` -- legacy parameter -- please ignore
+
+* ``number_of_accept`` is the number of accepted stochastic descent updates (most are rejected !!)
+
+* ``protocols`` is the corresponding local minima protocol found (just an array of 0 and 1). If the option
+``compress_output`` is chosen with the ``wo_protocol``, then the output is ``[-1]``.
+
+* ``fid_series`` are the successive fidelities encountered at each of the ``n_eval`` fidelity evaluations.
+If the ``fid_series`` option ``0`` is chosen, the output is ``[-1]``
+
+* ``move_history`` are the index of the accepted updates for stochastic descent. It is an array on integers in the interval
+``[0, n_step]``. If the ``fid_series`` option ``0`` is chosen, the output is ``[-1]``
 
 # Example
 
 ## Preparing a two-level system
-The parameters used can be specified in the file ``para.dat``. The parameters are specified as follow:
+The basic set-up is the following. The parameters used can be specified in the file ``para.dat``. The parameters are specified as follow:
 ```
 task	SD
 L	1
@@ -37,7 +77,9 @@ fast_protocol 1
 n_partition 10
 compress_output wo_protocol
 ```
-Each line corresponds to a different parameter. Here is a short documentation of what each parameter means:
+
+Each line corresponds to a different parameter. Below is a short documentation of how to use each parameter.
+
 
 ## Documentation
 

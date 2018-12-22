@@ -16,13 +16,16 @@ you can use the following command:
 This will overide the T value specified in the para.dat file and otherwise
 will use the other parameters specified there.
 
+Feel free to play with the parameters (increasing L, varying T, etc. ...)
+
 """
 
 ## Define the model
 
 model = QSP()
 
-## Run the computation. The results will be stored in the directory specified in the para.dat file
+## Run the computation. The results will be stored in the directory specified in the para.dat and
+## the name of the file will be automatically generated. 
 
 model.run()
 
